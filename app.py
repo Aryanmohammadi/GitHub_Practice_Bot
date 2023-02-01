@@ -34,6 +34,17 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
   """Echo the user message."""
   await update.message.reply_text(update.message.text)
 
+class ImageEdit:
+  def edge_dection(self,image):
+    FILE_NAME = 'geeks.png'
+    # Read image from disk.
+    img = cv.imread(FILE_NAME)
+    # Canny edge detection.
+    edges = cv.Canny(img, 100, 200) 
+    #Write image back to disk.
+    cv.imshow('Edges', edges)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
 
 async def echo_image(update, context):
   user = update.message.from_user
