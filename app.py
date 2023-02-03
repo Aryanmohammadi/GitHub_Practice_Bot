@@ -1,6 +1,6 @@
 import logging
 import os
-import pathlib
+import database
 from telegram import Update, ForceReply
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 import cv2 as cv
@@ -40,7 +40,7 @@ class ImageEdit:
     # Read image from disk.
     img = cv.imread(FILE_NAME)
     # Canny edge detection.
-    edges = cv.Canny(img, 100, 200) 
+    edges = cv.Canny(img, 100, 200)
     #Write image back to disk.
     cv.imshow('Edges', edges)
     cv.waitKey(0)
@@ -49,9 +49,10 @@ class ImageEdit:
 async def echo_image(update, context):
   user = update.message.from_user
   image_file = await update.message.photo[-1].get_file()
-  await image_file.download_to_drive("userphoto.jpg")
-  logger.info("Photo of %s: %s", user.first_name, "userphoto.jpg")
-  path = 'userphoto.jpg'
+  new_image_path = database.Database.make_new_image()
+  await image_file.download_to_drive(new_image_path)
+  logger.info("Photo of %s: %s", user.first_name, new_image_path)
+  path = database.Database.fetch_image(user['id'])
   image = cv.imread(path)
   window_name = 'Image'
   font = cv.FONT_HERSHEY_SIMPLEX
@@ -70,8 +71,10 @@ async def echo_image(update, context):
 def main() -> None:
   """Start the bot."""
   # Create the Application and pass it your bot's token.
-  application = Application.builder().token(Token).build()
-
+  application = Application.builder().token().build()
+  # Make new database if there is not
+  if(os.path.exists('database.db') == False):
+    database.Database('database.db').create_database()
   # on different commands - answer in Telegram
   application.add_handler(CommandHandler("start", start))
   application.add_handler(CommandHandler("help", help_command))
