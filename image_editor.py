@@ -79,8 +79,8 @@ class ImageEdit:
         blue_channel = cv2.LUT(blue_channel, increaseLookupTable).astype(np.uint8)
         return cv2.merge((red_channel, green_channel, blue_channel)) & cv2.imwrite("img/coldimage.jpg",self.image)
 
-
-def main():
+# We only have one main function in our project because it indicates that the file which contains our main function is our main script to run
+'''def main():
     image = cv2.imread("img/img.jpg")
     operation = ImageEdit(image)
     operation.coldImage(image)
@@ -91,3 +91,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+'''
